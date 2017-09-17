@@ -5,18 +5,23 @@
   <!-- Artifact information -->
   <groupId>org.basex</groupId>
   <artifactId>basex-parent</artifactId>
-  <version>8.6.6</version>
+  <version>8.6.6-IDG-FIXES</version>
   <packaging>pom</packaging>
 
   <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
+  
     <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>ID artifactory</id>
+      <name>Internal Release Repository</name>
+      <url>http://artifactory4.id1.de:8080/artifactory/ext-release-local</url>
     </repository>
+
+    <snapshotRepository>
+      <id>ID artifactory snapshots</id>
+      <name>Internal Snapshot Repository</name>
+      <url>http://artifactory4.id1.de:8080/artifactory/ext-snapshot-local</url>
+    </snapshotRepository>
+
   </distributionManagement>
 
   <modules>
@@ -409,7 +414,7 @@
             <!-- <skipTests>true</skipTests> -->
             <!--<forkMode>always</forkMode>-->
             <forkCount>1</forkCount>
-            <reuseForks>false</reuseForks>-->
+            <reuseForks>false</reuseForks>
           </configuration>
         </plugin>
 
