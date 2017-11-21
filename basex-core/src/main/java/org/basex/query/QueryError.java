@@ -263,6 +263,8 @@ public enum QueryError {
   BXSQ_FORMAT_X(BXSQ, 6, "Illegal % format"),
   /** BXSQ0007. */
   BXSQ_DRIVER_X(BXSQ, 7, "Could not initialize supplied driver: '%'"),
+  /** BXSQ0008. */
+  BXSQ_TIMEOUT_X(BXSQ, 8, "A query timeout exception occurred' '%'"),
 
   // Validation Module
 
