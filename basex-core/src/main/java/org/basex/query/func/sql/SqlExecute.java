@@ -28,7 +28,7 @@ public class SqlExecute extends SqlFn {
   private static final QNm Q_COLUMN = new QNm(SQL_PREFIX, "column", SQL_URI);
   /** Name. */
   private static final String NAME = "name";
-  /** Statement Options */
+  /** Statement Options. */
   public static class StatementOptions extends Options {
     /** QueryTimeout. */
     public static final NumberOption QUERY_TIMEOUT = new NumberOption("timeout", 0);
@@ -109,7 +109,7 @@ public class SqlExecute extends SqlFn {
                 }
               } else if(value instanceof Clob) {
                 // add huge string from clob
-                final Clob clob = ((Clob) value);
+                final Clob clob = (Clob) value;
                 col.add(clob.getSubString(1, (int) clob.length()));
               } else {
                 // add string representation of other values
@@ -129,7 +129,7 @@ public class SqlExecute extends SqlFn {
   }
 
   /**
-   * set options to the statement
+   * set options to the statement.
    * @param stmt statement
    * @param options options
    * @throws SQLException sql exception
