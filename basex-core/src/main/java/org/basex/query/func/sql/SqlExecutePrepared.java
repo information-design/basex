@@ -66,20 +66,17 @@ public final class SqlExecutePrepared extends SqlExecute {
     if(!(obj instanceof PreparedStatement)) throw BXSQ_STATE_X.get(info, id);
     try {
       final PreparedStatement stmt = (PreparedStatement) obj;
-      try {
-        // set additition statement options
-        if(exprs.length > 2) {
-          final StatementOptions options = toOptions(2, new StatementOptions(), qc);
-          setStatementOptions(stmt, options);
-        }
-        // Check if number of parameters equals number of place holders
-        if(c != stmt.getParameterMetaData().getParameterCount()) throw BXSQ_PARAMS.get(info);
-      } catch(final SQLSyntaxErrorException ex) {
-        // Oracle will fail receiving ParameterMetaData on update statement ()
-        // stackoverflow.com/questions/30666622/apache-dbutils-changing-column-name-in-update-sql
-        // disable all oracle exceptions (found beside ORA-00904 ORA-00936 also)
-        if(!ex.getMessage().startsWith("ORA-")) throw ex;
+      // set additition statement options
+      if(exprs.length > 2) {
+        final StatementOptions options = toOptions(2, new StatementOptions(), qc);
+        setStatementOptions(stmt, options);
       }
+      final String productName = stmt.getConnection().getMetaData().getDatabaseProductName();
+      // query parameter meta may produce may open cursors on fail
+      // also parser has a lot of bugs so avoid it on oracle any way
+      if (!productName.equals("Oracle") && c != stmt.getParameterMetaData().getParameterCount())
+        throw BXSQ_PARAMS.get(info);
+
       if(params != null) setParameters(params.children(), stmt);
       // If execute returns false, statement was updating: return number of updated rows
       return iter(stmt, false, stmt.execute());
