@@ -54,12 +54,10 @@ public final class SqlExecutePrepared extends SqlExecute {
   public Iter iter(final QueryContext qc) throws QueryException {
     checkCreate(qc);
     final int id = (int) toLong(exprs[0], qc);
-    long c = 0;
     ANode params = null;
     if(exprs.length > 1) {
       params = toElem(exprs[1], qc);
       if(!params.qname().eq(Q_PARAMETERS)) throw INVALIDOPTION_X.get(info, params.qname().local());
-      c = countParams(params);
     }
 
     final Object obj = jdbc(qc).get(id);
@@ -71,31 +69,17 @@ public final class SqlExecutePrepared extends SqlExecute {
         final StatementOptions options = toOptions(2, new StatementOptions(), qc);
         setStatementOptions(stmt, options);
       }
-      final String productName = stmt.getConnection().getMetaData().getDatabaseProductName();
-      // query parameter meta may produce may open cursors on fail
-      // also parser has a lot of bugs so avoid it on oracle any way
-      if (!productName.equals("Oracle") && c != stmt.getParameterMetaData().getParameterCount())
-        throw BXSQ_PARAMS.get(info);
-
       if(params != null) setParameters(params.children(), stmt);
       // If execute returns false, statement was updating: return number of updated rows
       return iter(stmt, false, stmt.execute());
-    } catch(final SQLException ex) {
+    } catch(final QueryException ex) {
+      // already handled
+      throw ex;
+    } catch(final Exception ex) {
+      // assume other then SQLException related to SQL Processing also
+      // Eg. java.lang.ArrayIndexOutOfBoundsException in case of SQLite
       throw BXSQ_ERROR_X.get(info, ex);
     }
-  }
-
-  /**
-   * Counts the numbers of <sql:parameter/> elements.
-   * @param params element <sql:parameter/>
-   * @return number of parameters
-   */
-  private static long countParams(final ANode params) {
-    final BasicNodeIter iter = params.children();
-    long n = iter.size();
-    if(n == -1) do ++n;
-    while(iter.next() != null);
-    return n;
   }
 
   /**
